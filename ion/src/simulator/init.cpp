@@ -33,7 +33,7 @@ void init_platform() {
   int margin = 10;
   int screen_width = Ion::Display::Width;
   int screen_height = Ion::Display::Height;
-  int keyboard_height = screen_width;
+  int keyboard_height = 450;
 
   Fl_Window * window = new Fl_Window(screen_width+2*margin, margin+screen_height+margin+keyboard_height+margin);
   window->callback(terminateHandler);
@@ -41,6 +41,7 @@ void init_platform() {
 #if defined(_WIN32) || defined(_WIN64)
   Fl::set_font(FL_SYMBOL, "Arial Unicode MS");
 #endif
+  window->color (Fl_Color(0XDDDDDD00));  // For better blending with the keyboard image
 
   KDColor * pixels = (KDColor *)malloc(Ion::Display::Width*Ion::Display::Height*sizeof(KDColor));
   sFrameBuffer = new KDFrameBuffer(pixels, KDSize(Ion::Display::Width, Ion::Display::Height));
