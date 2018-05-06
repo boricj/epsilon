@@ -43,13 +43,13 @@ static void keyHandler(Fl_Widget *, long key) {
 
 static const int kXYWHForKey[Ion::Keyboard::NumberOfKeys][4] = {
   // Arrow keys: Left, Up, Down, Right
-  {10, 48, 26, 22}, {42, 16, 22, 26}, {42, 78, 22, 26}, {70, 48, 26, 22},
+  {5, 44, 35, 30}, {39, 10, 28, 37}, {39, 72, 28, 37}, {66, 44, 35, 30},
 
   // OK and Back keys
-  {224, 44, 30, 30}, {277, 44, 30, 30},
+  {218, 38, 44, 44}, {270, 38, 44, 44},
 
   // Home and Power keys
-  {142, 24, 34, 22}, {142, 72, 34, 22},
+  {133, 18, 54, 35}, {133, 67, 54, 35},
 
   // Placeholders for inactive keys (B3, B4, B5, B6)
   {0,  0,  0,  0}, {0,  0,  0,  0}, {0,  0,  0,  0}, {0,  0,  0,  0},
@@ -99,16 +99,16 @@ FltkKbd::FltkKbd(int x, int y, int w, int h) : Fl_Group(x, y, w, h) {
       bh = kXYWHForKey[k][3];
     }
     else if (k < 30) {
-      bx = 10 + ((k-12)%6) * 53 + x;
-      by = 128 + ((k-12)/6) * 43 + y;
-      bw = 32;
-      bh = 22;
+      bx = 4 + ((k-12)%6) * 53 + x;
+      by = 124 + ((k-12)/6) * 43 + y;
+      bw = 44;
+      bh = 30;
     }
     else {
-      bx = 14 + ((k-30)%6) * 64 + x;
-      by = 260 + ((k-30)/6) * 48 + y;
-      bw = 34;
-      bh = 22;
+      bx = 4 + ((k-30)%6) * 64 + x;
+      by = 253 + ((k-30)/6) * 48 + y;
+      bw = 53;
+      bh = 36;
     }
     if (shouldRepeatKey((Ion::Keyboard::Key)k)) {
       m_buttons[k] = new Fl_Push_Repeat_Button(bx, by, bw, bh, kCharForKey[k]);
