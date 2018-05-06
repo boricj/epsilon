@@ -40,10 +40,6 @@ static void keyHandler(Fl_Widget *, long key) {
     updateModifiersFromEvent(currentEvent);
   }
 }
-#define KEY_X   0
-#define KEY_Y   1
-#define KEY_W   2
-#define KEY_H   3
 
 static const int kXYWHForKey[Ion::Keyboard::NumberOfKeys][4] = {
   // Arrow keys: Left, Up, Down, Right
@@ -57,17 +53,6 @@ static const int kXYWHForKey[Ion::Keyboard::NumberOfKeys][4] = {
 
   // Placeholders for inactive keys (B3, B4, B5, B6)
   {0,  0,  0,  0}, {0,  0,  0,  0}, {0,  0,  0,  0}, {0,  0,  0,  0},
-
-  // 3x6 function keys
-  {10, 128, 32, 22}, {63, 128, 32, 22}, {116, 128, 32, 22}, {169, 128, 32, 22}, {222, 128, 32, 22}, {275, 128, 32, 22},
-  {10, 171, 32, 22}, {63, 171, 32, 22}, {116, 171, 32, 22}, {169, 171, 32, 22}, {222, 171, 32, 22}, {275, 171, 32, 22},
-  {10, 214, 32, 22}, {63, 214, 32, 22}, {116, 214, 32, 22}, {169, 214, 32, 22}, {222, 214, 32, 22}, {275, 214, 32, 22},
-
-  // 4x5 numeric keys (plus iactive keys F6, G6, H6 and I6)
-  {14, 260, 34, 22}, {78, 260, 34, 22}, {142, 260, 34, 22}, {206, 260, 34, 22}, {270, 260, 34, 22}, {0, 0,  0,  0},
-  {14, 308, 34, 22}, {78, 308, 34, 22}, {142, 308, 34, 22}, {206, 308, 34, 22}, {270, 308, 34, 22}, {0, 0,  0,  0},
-  {14, 356, 34, 22}, {78, 356, 34, 22}, {142, 356, 34, 22}, {206, 356, 34, 22}, {270, 356, 34, 22}, {0, 0,  0,  0},
-  {14, 404, 34, 22}, {78, 404, 34, 22}, {142, 404, 34, 22}, {206, 404, 34, 22}, {270, 404, 34, 22}, {0, 0,  0,  0}
 };
 
 static Fl_Group* Bkg_Image = NULL;
@@ -106,18 +91,29 @@ protected:
 
 FltkKbd::FltkKbd(int x, int y, int w, int h) : Fl_Group(x, y, w, h) {
   for (int k=0; k<Ion::Keyboard::NumberOfKeys; k++) {
+    int bx, by, bw, bh;
+    if (k < 12) {
+      bx = kXYWHForKey[k][0] + x;
+      by = kXYWHForKey[k][1] + y;
+      bw = kXYWHForKey[k][2];
+      bh = kXYWHForKey[k][3];
+    }
+    else if (k < 30) {
+      bx = 10 + ((k-12)%6) * 53 + x;
+      by = 128 + ((k-12)/6) * 43 + y;
+      bw = 32;
+      bh = 22;
+    }
+    else {
+      bx = 14 + ((k-30)%6) * 64 + x;
+      by = 260 + ((k-30)/6) * 48 + y;
+      bw = 34;
+      bh = 22;
+    }
     if (shouldRepeatKey((Ion::Keyboard::Key)k)) {
-      m_buttons[k] = new Fl_Push_Repeat_Button(kXYWHForKey[k][KEY_X] + x,
-                                               kXYWHForKey[k][KEY_Y] + y,
-                                               kXYWHForKey[k][KEY_W],
-                                               kXYWHForKey[k][KEY_H],
-                                               kCharForKey[k]);
+      m_buttons[k] = new Fl_Push_Repeat_Button(bx, by, bw, bh, kCharForKey[k]);
     } else {
-      m_buttons[k] = new Fl_Push_Button(kXYWHForKey[k][KEY_X] + x,
-                                        kXYWHForKey[k][KEY_Y] + y,
-                                        kXYWHForKey[k][KEY_W],
-                                        kXYWHForKey[k][KEY_H],
-                                        kCharForKey[k]);
+      m_buttons[k] = new Fl_Push_Button(bx, by, bw, bh, kCharForKey[k]);
     }
 #if defined(_WIN32) || defined(_WIN64)
     m_buttons[k]->labelfont(FL_SYMBOL);
