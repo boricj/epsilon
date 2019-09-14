@@ -61,15 +61,6 @@ bench_objs = $(call object_for,$(ion_src) $(liba_src) $(kandinsky_src) $(ion_dev
 $(BUILD_DIR)/bench.ram.$(EXE): $(bench_objs)
 $(BUILD_DIR)/bench.flash.$(EXE): $(bench_objs)
 
-.PHONY: %.two_binaries
-%.two_binaries: %.elf
-	@echo "Building an internal and an external binary for     $<"
-	$(Q) $(OBJCOPY) -O binary -j .text.external -j .rodata.external $< $(basename $<).external.bin
-	$(Q) $(OBJCOPY) -O binary -R .text.external -R .rodata.external $< $(basename $<).internal.bin
-	@echo "Padding $(basename $<).external.bin and $(basename $<).internal.bin"
-	$(Q) printf "\xFF\xFF\xFF\xFF" >> $(basename $<).external.bin
-	$(Q) printf "\xFF\xFF\xFF\xFF" >> $(basename $<).internal.bin
-
 .PHONY: binpack
 binpack:
 	rm -rf build/binpack
