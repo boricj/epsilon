@@ -1,4 +1,5 @@
 ion_device_src += $(addprefix ion/src/device/n0110/drivers/, \
+  archive.cpp \
   board.cpp \
   cache.cpp \
   led.cpp \

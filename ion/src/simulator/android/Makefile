@@ -4,6 +4,7 @@ ion_src += $(addprefix ion/src/simulator/android/src/cpp/, \
 )
 
 ion_src += $(addprefix ion/src/simulator/shared/, \
+  dummy/archive.cpp \
   dummy/callback.cpp \
   dummy/language.cpp \
 )

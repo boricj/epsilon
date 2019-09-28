@@ -8,6 +8,7 @@ SFLAGS += -DUSING_GENERATED_CONFIG_H
 SFLAGS += -Iion/src/simulator/linux/include
 
 ion_src += $(addprefix ion/src/simulator/linux/, \
+  archive.cpp \
   images.cpp \
   language.cpp \
   background.s \

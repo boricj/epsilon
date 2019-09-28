@@ -16,6 +16,7 @@ ion_src += $(addprefix ion/src/simulator/web/, \
 )
 
 ion_src += $(addprefix ion/src/simulator/shared/, \
+  dummy/archive.cpp \
   dummy/language.cpp \
   dummy/telemetry.cpp \
 )

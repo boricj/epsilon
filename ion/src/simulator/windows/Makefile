@@ -5,6 +5,7 @@ ion_src += $(addprefix ion/src/simulator/windows/, \
 )
 
 ion_src += $(addprefix ion/src/simulator/shared/, \
+  dummy/archive.cpp \
   dummy/callback.cpp \
   dummy/telemetry.cpp \
 )
