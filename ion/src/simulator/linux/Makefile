@@ -15,6 +15,7 @@ ion_src += $(addprefix ion/src/simulator/linux/, \
 )
 
 ion_src += $(addprefix ion/src/simulator/shared/, \
+  numworks_api.cpp \
   dummy/callback.cpp \
   dummy/telemetry.cpp \
 )
