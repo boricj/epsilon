@@ -26,26 +26,26 @@ uint64_t scanKeyboard() {
   return Ion::Keyboard::scan();
 }
 
-void pushRect(Vec2D location, Vec2D size, const uint16_t * pixels) {
-  KDRect rect(location.x, location.y, size.x, size.y);
+void pushRect(int16_t x, int16_t y, uint16_t w, uint16_t h, const uint16_t * pixels) {
+  KDRect rect(x, y, w, h);
 
   Ion::Display::pushRect(rect, reinterpret_cast<const KDColor*>(pixels));
 }
 
-void pushRectUniform(Vec2D location, Vec2D size, uint16_t color) {
-  KDRect rect(location.x, location.y, size.x, size.y);
+void pushRectUniform(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t color) {
+  KDRect rect(x, y, w, h);
 
   Ion::Display::pushRectUniform(rect, KDColor::RGB16(color));
 }
 
-void drawTextLarge(Vec2D location, const char *text, uint16_t fg, uint16_t bg) {
-  KDPoint point(location.x, location.y);
+void drawTextLarge(int16_t x, int16_t y, const char *text, uint16_t fg, uint16_t bg) {
+  KDPoint point(x, y);
 
   KDIonContext::sharedContext()->drawString(text, point, KDFont::LargeFont, KDColor::RGB16(fg), KDColor::RGB16(bg));
 }
 
-void drawTextSmall(Vec2D location, const char *text, uint16_t fg, uint16_t bg) {
-  KDPoint point(location.x, location.y);
+void drawTextSmall(int16_t x, int16_t y, const char *text, uint16_t fg, uint16_t bg) {
+  KDPoint point(x, y);
 
   KDIonContext::sharedContext()->drawString(text, point, KDFont::SmallFont, KDColor::RGB16(fg), KDColor::RGB16(bg));
 }

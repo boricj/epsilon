@@ -18,6 +18,9 @@ const char * ExternalApp::Descriptor::upperName() {
 }
 
 const Image * ExternalApp::Descriptor::icon() {
+  if (fileicon) {
+    return fileicon;
+  }
   return ImageStore::SettingsIcon;
 }
 
@@ -32,10 +35,9 @@ ExternalApp::Descriptor * ExternalApp::Snapshot::descriptor() {
 ExternalApp::ExternalApp(ExternalApp::Snapshot * snapshot) :
   ::App(snapshot, nullptr)
 {
+  KDIonContext::sharedContext()->setOrigin(KDPointZero);
+  KDIonContext::sharedContext()->setClippingRect(KDRect(KDPointZero, Ion::Display::Width, Ion::Display::Height));
   AppsContainer * container = AppsContainer::sharedAppsContainer();
-  bool success = Ion::Archive::executeFile(snapshot->descriptor()->name());
+  Ion::Archive::executeFile(snapshot->descriptor()->name());
   container->switchTo(container->appSnapshotAtIndex(0));
-  if (!success) {
-    container->activeApp()->displayWarning(I18n::Message::StorageMemoryFull1);
-  }
 }

@@ -1,4 +1,7 @@
 #include <ion/archive.h>
+#include <ion/display.h>
+
+#include <SDL.h>
 
 #include <dirent.h>
 #include <fcntl.h>
@@ -14,6 +17,8 @@ namespace Archive {
 
 constexpr int MaxEntries = 40;
 static File sEntries[MaxEntries];
+static void* sObjetEntries[MaxEntries];
+
 static size_t sNumberOfEntries;
 
 static void loadEntries() {
@@ -36,7 +41,13 @@ static void loadEntries() {
       strlcpy(entry.name, dp->d_name, MaxNameLength);
       entry.data = reinterpret_cast<const uint8_t*>(mmap(nullptr, fpStat.st_size, PROT_READ|PROT_EXEC, MAP_PRIVATE, fp, 0));
       entry.dataLength = entry.data ? fpStat.st_size : 0;
-      entry.isExecutable = true;
+      entry.isExecutable = false;
+
+      sObjetEntries[sNumberOfEntries] = SDL_LoadObject((std::string("./")+entry.name).c_str());
+      if (sObjetEntries[sNumberOfEntries] && SDL_LoadFunction(sObjetEntries[sNumberOfEntries], "numworks_main") != nullptr) {
+        entry.isExecutable = true;
+        entry.icon = *reinterpret_cast<const Image**>(SDL_LoadFunction(sObjetEntries[sNumberOfEntries], "_ZN10ImageStore4IconE"));
+      }
 
       close(fp);
       sEntries[sNumberOfEntries++] = entry;
@@ -61,8 +72,11 @@ bool fileAtIndex(size_t index, File &entry) {
   return true;
 }
 
-bool executeFile(const char *name) {
-  return false;
+void executeFile(const char *name) {
+  KDIonContext::sharedContext()->setOrigin(KDPointZero);
+  KDIonContext::sharedContext()->setClippingRect(KDRect(KDPointZero, KDSize(Ion::Display::Width, Ion::Display::Height)));
+  void(*fn)() = reinterpret_cast<void(*)()>(SDL_LoadFunction(sObjetEntries[indexFromName(name)], "numworks_main"));
+  fn();
 }
 
 }

@@ -24,7 +24,10 @@ AppsContainerStorage::AppsContainerStorage() :
     Ion::Archive::File entry;
     Ion::Archive::fileAtIndex(idx, entry);
     if (entry.isExecutable) {
-      strlcpy(m_externalAppSnapshots[m_numberOfExternalApps].descriptor()->filename, entry.name, Ion::Archive::MaxNameLength);
+      ExternalApp::Descriptor *descriptor = m_externalAppSnapshots[m_numberOfExternalApps].descriptor();
+      strlcpy(descriptor->filename, entry.name, Ion::Archive::MaxNameLength);
+      descriptor->fileicon = entry.icon;
+
       m_numberOfExternalApps++;
 
       if (m_numberOfExternalApps == k_maxNumberOfExternalApps - 1) {

@@ -88,6 +88,14 @@ void initMPU() {
 }
 
 void init() {
+  asm volatile ("mov R0, SP");
+  asm volatile ("msr PSP, R0");
+  asm volatile ("ldr R0, =0x20040000");
+  asm volatile ("msr MSP, R0");
+  asm volatile ("mrs R0, CONTROL");
+  asm volatile ("orr R0, R0, #2");
+  asm volatile ("msr CONTROL, R0");
+
   initFPU();
   initMPU();
   initClocks();

@@ -1,6 +1,6 @@
 #include <ion/archive.h>
 
-#include <cstring>
+#include <string.h>
 
 namespace Ion {
 namespace Archive {

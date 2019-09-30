@@ -35,10 +35,6 @@ enum class Key : uint8_t {
   None = 54
 };
 
-struct Vec2D {
-  int16_t x, y;
-};
-
 void* allocMem(size_t length);
 void freeMem(void *ptr);
 
@@ -47,10 +43,10 @@ void msleep(uint32_t ms);
 
 uint64_t scanKeyboard();
 
-void pushRect(Vec2D location, Vec2D size, const uint16_t * pixels);
-void pushRectUniform(Vec2D location, Vec2D size, uint16_t color);
-void drawTextLarge(Vec2D location, const char *text, uint16_t fg, uint16_t bg);
-void drawTextSmall(Vec2D location, const char *text, uint16_t fg, uint16_t bg);
+void pushRect(int16_t x, int16_t y, uint16_t w, uint16_t h, const uint16_t * pixels);
+void pushRectUniform(int16_t x, int16_t y, uint16_t w, uint16_t h, uint16_t color);
+void drawTextLarge(const char *text, int16_t x, int16_t y, uint16_t fg, uint16_t bg);
+void drawTextSmall(const char *text, int16_t x, int16_t y, uint16_t fg, uint16_t bg);
 void waitForVBlank();
 
 bool fileAtIndex(size_t index, char *name, const uint8_t **data, size_t *dataLength);

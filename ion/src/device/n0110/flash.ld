@@ -53,6 +53,7 @@ SECTIONS {
    * internal flash to the external flash. */
   .text.internal_to_external : {
     *(.text._ZL22jump_to_external_flashv)
+    *(.text._Z14handle_syscallv)
   } >INTERNAL_FLASH
 
   /* Use boot routine and required dependencies */
@@ -63,6 +64,7 @@ SECTIONS {
     *(.text.start)
     *(.text.abort)
     *(.text.isr_systick)
+    *(.text.isr_svc)
     *(.text.__assert)
     *(.text.memcpy)
     *(.text.memset)

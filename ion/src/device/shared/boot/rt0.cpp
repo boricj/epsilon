@@ -1,7 +1,10 @@
 #include "isr.h"
 #include <stdint.h>
+#include <stdlib.h>
 #include <string.h>
 #include <ion.h>
+#include <poincare/integer.h>
+#include <drivers/cache.h>
 #include "../drivers/board.h"
 #include "../drivers/reset.h"
 #include "../drivers/timing.h"
@@ -120,4 +123,134 @@ void __attribute__((noinline)) start() {
 
 void __attribute__((interrupt, noinline)) isr_systick() {
   Ion::Device::Timing::MillisElapsed++;
+}
+
+void __attribute__((noinline)) handle_syscall() {
+  Ion::Device::Cache::dsb();
+
+  /**
+   * Stack frame layout:
+   *    ...
+   *    xPSR    frame[7]
+   *    PC      frame[6]
+   *    LR      frame[5]
+   *    R12     frame[4]
+   *    R3      frame[3]
+   *    R2      frame[2]
+   *    R1      frame[1]
+   *    R0      frame[0]
+   */
+  register uint32_t * frame;
+  asm volatile ("MRS %0, PSP\n\t" : "=r" (frame) );
+
+  uint8_t syscallNumber = reinterpret_cast<char *>(frame[6])[-2];
+  Ion::Archive::File entry;
+  char buffer[40];
+
+  Ion::LED::setColor(KDColorBlue);
+  Poincare::Integer((Poincare::native_int_t)syscallNumber).serialize(buffer, 40);
+  KDIonContext::sharedContext()->drawString(buffer, KDPoint(0, 0), KDFont::SmallFont, KDColorRed, KDColorBlack);
+  Poincare::Integer((Poincare::native_int_t)frame[0]).serialize(buffer, 40);
+  KDIonContext::sharedContext()->drawString(buffer, KDPoint(0, 10), KDFont::SmallFont, KDColorRed, KDColorBlack);
+  Poincare::Integer((Poincare::native_int_t)frame[1]).serialize(buffer, 40);
+  KDIonContext::sharedContext()->drawString(buffer, KDPoint(0, 20), KDFont::SmallFont, KDColorRed, KDColorBlack);
+  Poincare::Integer((Poincare::native_int_t)frame[2]).serialize(buffer, 40);
+  KDIonContext::sharedContext()->drawString(buffer, KDPoint(0, 30), KDFont::SmallFont, KDColorRed, KDColorBlack);
+  Poincare::Integer((Poincare::native_int_t)frame[3]).serialize(buffer, 40);
+  KDIonContext::sharedContext()->drawString(buffer, KDPoint(0, 40), KDFont::SmallFont, KDColorRed, KDColorBlack);
+  //Ion::Timing::usleep(4000000);
+  Ion::LED::setColor(KDColorBlack);
+
+  switch (syscallNumber) {
+    case 0:
+      frame[0] = reinterpret_cast<uint32_t>(malloc(frame[0]));
+      break;
+    case 1:
+      free(reinterpret_cast<void*>(frame[0]));
+      break;
+    case 2:
+      *reinterpret_cast<uint64_t*>(frame) = Ion::Timing::millis();
+      break;
+    case 3:
+      Ion::LED::setColor(KDColorGreen);
+      Ion::Timing::usleep(1000*frame[0]);
+      Ion::LED::setColor(KDColorBlack);
+      break;
+    case 4:
+      *reinterpret_cast<uint64_t*>(frame) = Ion::Keyboard::scan();
+      break;
+    case 5:
+      Ion::Display::pushRect(
+        KDRect(
+          (int16_t)(frame[0] >> 16),
+          (int16_t)(frame[0] & 0xFFFF),
+          (uint16_t)frame[1] >> 16,
+          (uint16_t)frame[1] & 0xFFFF),
+        reinterpret_cast<const KDColor*>(frame[2])
+      );
+      break;
+    case 6:
+      Ion::Display::pushRectUniform(
+        KDRect(
+          (int16_t)(frame[0] >> 16),
+          (int16_t)(frame[0] & 0xFFFF),
+          (uint16_t)frame[1] >> 16,
+          (uint16_t)frame[1] & 0xFFFF),
+        KDColor::RGB16(frame[2])
+      );
+      break;
+    case 7:
+      KDIonContext::sharedContext()->drawString(
+        reinterpret_cast<const char*>(frame[0]),
+        KDPoint(
+          (int16_t)(frame[1] >> 16),
+          (int16_t)(frame[1] & 0xFFFF)
+        ),
+        KDFont::LargeFont,
+        KDColor::RGB16(frame[2]),
+        KDColor::RGB16(frame[3])
+      );
+      break;
+    case 8:
+      KDIonContext::sharedContext()->drawString(
+        reinterpret_cast<const char*>(frame[0]),
+        KDPoint(
+          (int16_t)(frame[1] >> 16),
+          (int16_t)(frame[1] & 0xFFFF)
+        ),
+        KDFont::SmallFont,
+        KDColor::RGB16(frame[2]),
+        KDColor::RGB16(frame[3])
+      );
+      break;
+    case 9:
+      Ion::Display::waitForVBlank();
+      break;
+    case 10:
+      if (Ion::Archive::fileAtIndex(frame[0], entry)) {
+        frame[0] = 1;
+        strlcpy(reinterpret_cast<char*>(frame[1]), entry.name, Ion::Archive::MaxNameLength);
+        *reinterpret_cast<const uint8_t**>(frame[2]) = entry.data;
+        *reinterpret_cast<size_t*>(frame[3]) = entry.dataLength;
+      }
+      else {
+        frame[0] = 0;
+      }
+      break;
+    case 11:
+      frame[0] = Ion::Archive::indexFromName(reinterpret_cast<const char*>(frame[0]));
+      break;
+    case 12:
+      frame[0] = Ion::Archive::numberOfFiles();
+      break;
+    default:
+      Ion::LED::setColor(KDColorRed);
+      frame[0] = 0xFFFFFFFF;
+      frame[1] = 0xFFFFFFFF;
+      break;
+  }
+}
+
+void __attribute__((interrupt, noinline)) isr_svc() {
+  handle_syscall();
 }

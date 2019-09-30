@@ -12,6 +12,7 @@ public:
     const Image * icon() override;
 
     char filename[Ion::Archive::MaxNameLength];
+    const Image *fileicon;
   };
   class Snapshot : public App::Snapshot {
   public:
