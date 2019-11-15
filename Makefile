@@ -127,6 +127,34 @@ clean:
 	@echo "CLEAN"
 	$(Q) rm -rf $(BUILD_DIR)
 
+# epsilon component generation
+apps_filter := $(foreach app,$(EPSILON_APPS),$(BUILD_DIR)/apps/$(app)/%.o)
+
+$(eval $(call rule_for, \
+  KO, %.ko, $$(all_objs), \
+  echo $$(LLD) -r $$(filter $$(BUILD_DIR)/$$(basename $$(notdir $$@))/%,$$(all_objs)) -o $$@ \
+))
+
+$(eval $(call rule_for, \
+  APP, %.app, $$(all_objs), \
+  $$(LLD) -r $$(filter $$(BUILD_DIR)/apps/$$(basename $$(notdir $$@))/%,$$(all_objs)) -o $$@ \
+))
+
+$(BUILD_DIR)/apps.ko: $(filter-out $(apps_filter),$(call object_for,$(apps_default_src)))
+	$(LLD) -r $^ -o $@
+
+$(BUILD_DIR)/apps.onboarding.ko: $(filter-out $(apps_filter),$(call object_for,$(apps_onboarding_src)))
+	$(LLD) -r $^ -o $@
+
+$(BUILD_DIR)/apps.onboarding.update.ko: $(filter-out $(apps_filter),$(call object_for,$(apps_onboarding_update_src)))
+	$(LLD) -r $^ -o $@
+
+$(BUILD_DIR)/apps.onboarding.beta.ko: $(filter-out $(apps_filter),$(call object_for,$(apps_onboarding_beta_src)))
+	$(LLD) $(SFLAGS) -r $^ -o $@
+
+.PHONY: epsilon_components
+epsilon_components: $(foreach x,apps escher ion kandinsky liba libaxx poincare python,$(BUILD_DIR)/$(x).ko) $(foreach x,$(EPSILON_APPS),$(BUILD_DIR)/$(x).app)
+
 .PHONY: cowsay_%
 cowsay_%:
 	@echo " -------"
