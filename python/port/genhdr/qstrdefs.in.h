@@ -435,6 +435,24 @@ Q(EE)
 Q(Ans)
 Q(EXE)
 
+// Machine QSTRs
+Q(machine)
+Q(Pin)
+
+Q(mode)
+Q(pull)
+Q(init)
+Q(value)
+Q(off)
+Q(on)
+
+Q(IN)
+Q(OUT)
+Q(OPEN_DRAIN)
+Q(PULL_UP)
+Q(PULL_DOWN)
+
+
 // Matplotlib QSTRs
 Q(arrow)
 Q(axis)
