@@ -64,6 +64,7 @@ SECTIONS {
     *(.text.start)
     *(.text.abort)
     *(.text.isr_systick)
+    *(.text.isr_tim2)
     *(.text.__assert)
     *(.text.memcpy)
     *(.text.memset)
@@ -114,6 +115,8 @@ SECTIONS {
     *(.rodata._ZN3Ion6Device4RegsL5GPIOAE)
     *(.rodata._ZN3Ion6Device4RegsL5GPIOBE)
     *(.rodata._ZN3Ion6Device5Board4initEv.str1.4)
+
+    *(.rodata.audio*)
   } >INTERNAL_FLASH
 
   .exam_mode_buffer ORIGIN(EXTERNAL_FLASH) : {

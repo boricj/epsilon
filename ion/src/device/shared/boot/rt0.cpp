@@ -124,3 +124,27 @@ void __attribute__((interrupt, noinline)) isr_systick() {
   t++;
   Ion::Device::Timing::MillisElapsed = t;
 }
+
+volatile size_t audioReadPointer;
+volatile size_t audioWritePointer;
+volatile uint32_t audioBuffer[AUDIO_BUFFER_SIZE];
+
+void __attribute__((interrupt, noinline)) isr_tim2() {
+#if 1
+  size_t const pointer = audioReadPointer;
+  bool const value = (audioBuffer[pointer/32] & (1 << (pointer%32)));
+
+  if (pointer != audioWritePointer) {
+    Ion::Device::Regs::GPIOA.ODR()->set(11, value);
+    audioReadPointer = (pointer+1) % (AUDIO_BUFFER_SIZE*32);
+  }
+  else {
+    // Underrun, preserve GPIOs.
+    Ion::Device::Regs::GPIOA.ODR()->set(11, false);
+  }
+#else
+  Ion::Device::Regs::GPIOA.ODR()->set(11, !Ion::Device::Regs::GPIOA.ODR()->get(11));
+#endif
+  Ion::Device::Regs::TIM2.SR()->setUIF(false);
+  Ion::Device::Regs::NVIC.NVIC_ICPR0()->set(28, false);
+}
