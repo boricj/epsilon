@@ -370,6 +370,12 @@ Q(KEY_EE)
 Q(KEY_ANS)
 Q(KEY_EXE)
 
+// Audio QSTRs
+Q(audio)
+Q(init)
+Q(shutdown)
+Q(queue)
+
 // Kandinsky QSTRs
 Q(kandinsky)
 Q(color)

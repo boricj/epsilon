@@ -152,6 +152,8 @@ port_src += $(addprefix python/port/,\
   mod/matplotlib/pyplot/plot_view.cpp \
   mod/time/modtime.c \
   mod/time/modtime_table.c \
+  mod/audio/modaudio.cpp \
+  mod/audio/modaudio_table.c \
   mod/os/modos.cpp \
   mod/os/modos_table.c \
   mod/turtle/modturtle.cpp \

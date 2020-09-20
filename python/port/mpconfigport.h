@@ -126,6 +126,7 @@ typedef long mp_off_t;
 
 #define MP_STATE_PORT MP_STATE_VM
 
+extern const struct _mp_obj_module_t modaudio_module;
 extern const struct _mp_obj_module_t modion_module;
 extern const struct _mp_obj_module_t modkandinsky_module;
 extern const struct _mp_obj_module_t modmachine_module;
@@ -136,6 +137,7 @@ extern const struct _mp_obj_module_t modos_module;
 extern const struct _mp_obj_module_t modturtle_module;
 
 #define MICROPY_PORT_BUILTIN_MODULES \
+    { MP_ROM_QSTR(MP_QSTR_audio), MP_ROM_PTR(&modaudio_module) }, \
     { MP_ROM_QSTR(MP_QSTR_ion), MP_ROM_PTR(&modion_module) }, \
     { MP_ROM_QSTR(MP_QSTR_kandinsky), MP_ROM_PTR(&modkandinsky_module) }, \
     { MP_ROM_QSTR(MP_QSTR_machine), MP_ROM_PTR(&modmachine_module) }, \
